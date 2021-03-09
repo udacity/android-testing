@@ -73,15 +73,23 @@ class TasksFragmentTest {
         scenario.onFragment {
             Navigation.setViewNavController(it.view!!, navController)
         }
+        // https://stackoverflow.com/questions/43737785/kotlin-interface-does-not-have-constructors
+        // SAM conversion is not supported for interfaces defined in Kotlin before 1.4.0. If your Kotlin version is below 1.4.0 you should use the below code rather than the above code.
+        /*scenario.onFragment(object : FragmentScenario.FragmentAction<TasksFragment> {
+            override fun perform(fragment: TasksFragment) {
+                Navigation.setViewNavController(fragment.view!!, navController)
+            }
+        })*/
+
 
         // WHEN - Click on the "+" button
         onView(withId(R.id.add_task_fab)).perform(click())
 
         // THEN - Verify that we navigate to the add screen
         verify(navController).navigate(
-            TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(
-                null, getApplicationContext<Context>().getString(R.string.add_task)
-            )
+                TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(
+                        null, getApplicationContext<Context>().getString(R.string.add_task)
+                )
         )
     }
 
@@ -99,13 +107,13 @@ class TasksFragmentTest {
 
         // WHEN - Click on the first list item
         onView(withId(R.id.tasks_list))
-            .perform(RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
-                hasDescendant(withText("TITLE1")), click()))
+                .perform(RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
+                        hasDescendant(withText("TITLE1")), click()))
 
 
         // THEN - Verify that we navigate to the first detail screen
         verify(navController).navigate(
-            TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment( "id1")
+                TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment("id1")
         )
     }
 
