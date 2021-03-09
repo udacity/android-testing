@@ -41,6 +41,13 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    // Error occurs while unit testing DefaultTaskRepository class since CountingIdlingResource used in EspressoIdlingResource is using TextUtils.isEmpty.
+    // https://stackoverflow.com/questions/50911878/java-lang-runtimeexception-method-isempty-in-android-text-textutils-not-mocked
+    // http://tools.android.com/tech-docs/unit-testing-support#TOC-Method-...-not-mocked.-
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -62,9 +69,9 @@ dependencies {
     kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
     implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
-    kapt "androidx.lifecycle:lifecycle-compiler:$archLifecycleVersion"
+    kapt "androidx.lifecycle:lifecycle-common-java8:$archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$archLifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$archLifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
@@ -72,20 +79,15 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
 
     // AndroidX Test - Instrumented testing
-    androidTestImplementation "androidx.test.ext:junit:1.1.2"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.4.0-alpha04"
+    androidTestImplementation "androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'
-
     // The following Espresso dependency can be either "implementation"
     // or "androidTestImplementation", depending on whether you want the
     // dependency to appear on your APK's compile classpath or the test APK
     // classpath.
     implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
-
-
-    // Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
-    implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
+    androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
 
     // Add the following for InstantTaskExecutorRule class. https://stackoverflow.com/a/56073388
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
@@ -99,12 +101,16 @@ dependencies {
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
     androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
 
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
+
     // launchFragmentInContainer did not resolved. Fixed by adding the followings
     // https://stackoverflow.com/questions/56558775/launchfragmentincontainer-unable-to-resolve-activity-in-android
     debugImplementation("androidx.fragment:fragment-testing:1.3.0")
 
     // required if you want to use Mockito for unit tests
-    testImplementation 'org.mockito:mockito-core:2.27.0'
+    testImplementation 'org.mockito:mockito-core:3.0.0'
     // required if you want to use Mockito for Android tests
     androidTestImplementation 'org.mockito:mockito-android:2.25.0'
 }
